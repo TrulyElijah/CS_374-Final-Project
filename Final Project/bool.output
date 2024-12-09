@@ -1,0 +1,381 @@
+Grammar
+
+    0 $accept: calc $end
+
+    1 calc: /* empty */
+    2     | calc line
+
+    3 line: T_NEWLINE
+    4     | bool_expr T_NEWLINE
+    5     | T_ID T_ASSIGN bool_expr line
+
+    6 bool_expr: T_BOOL
+    7          | bool_expr T_AND bool_expr
+    8          | bool_expr T_OR bool_expr
+    9          | bool_expr T_XOR bool_expr
+   10          | bool_expr T_EQ bool_expr
+   11          | bool_expr T_NEQ bool_expr
+   12          | T_NOT bool_expr
+   13          | T_LEFT bool_expr T_RIGHT
+   14          | T_ID
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+T_BOOL (258) 6
+T_ID (259) 5 14
+T_EQ (260) 10
+T_NEQ (261) 11
+T_AND (262) 7
+T_OR (263) 8
+T_XOR (264) 9
+T_NOT (265) 12
+T_LEFT (266) 13
+T_RIGHT (267) 13
+T_NEWLINE (268) 3 4
+T_ASSIGN (269) 5
+
+
+Nonterminals, with rules where they appear
+
+$accept (15)
+    on left: 0
+calc (16)
+    on left: 1 2, on right: 0 2
+line (17)
+    on left: 3 4 5, on right: 2 5
+bool_expr (18)
+    on left: 6 7 8 9 10 11 12 13 14, on right: 4 5 7 8 9 10 11 12 13
+
+
+state 0
+
+    0 $accept: . calc $end
+
+    $default  reduce using rule 1 (calc)
+
+    calc  go to state 1
+
+
+state 1
+
+    0 $accept: calc . $end
+    2 calc: calc . line
+
+    $end       shift, and go to state 2
+    T_BOOL     shift, and go to state 3
+    T_ID       shift, and go to state 4
+    T_NOT      shift, and go to state 5
+    T_LEFT     shift, and go to state 6
+    T_NEWLINE  shift, and go to state 7
+
+    line       go to state 8
+    bool_expr  go to state 9
+
+
+state 2
+
+    0 $accept: calc $end .
+
+    $default  accept
+
+
+state 3
+
+    6 bool_expr: T_BOOL .
+
+    $default  reduce using rule 6 (bool_expr)
+
+
+state 4
+
+    5 line: T_ID . T_ASSIGN bool_expr line
+   14 bool_expr: T_ID .
+
+    T_ASSIGN  shift, and go to state 10
+
+    $default  reduce using rule 14 (bool_expr)
+
+
+state 5
+
+   12 bool_expr: T_NOT . bool_expr
+
+    T_BOOL  shift, and go to state 3
+    T_ID    shift, and go to state 11
+    T_NOT   shift, and go to state 5
+    T_LEFT  shift, and go to state 6
+
+    bool_expr  go to state 12
+
+
+state 6
+
+   13 bool_expr: T_LEFT . bool_expr T_RIGHT
+
+    T_BOOL  shift, and go to state 3
+    T_ID    shift, and go to state 11
+    T_NOT   shift, and go to state 5
+    T_LEFT  shift, and go to state 6
+
+    bool_expr  go to state 13
+
+
+state 7
+
+    3 line: T_NEWLINE .
+
+    $default  reduce using rule 3 (line)
+
+
+state 8
+
+    2 calc: calc line .
+
+    $default  reduce using rule 2 (calc)
+
+
+state 9
+
+    4 line: bool_expr . T_NEWLINE
+    7 bool_expr: bool_expr . T_AND bool_expr
+    8          | bool_expr . T_OR bool_expr
+    9          | bool_expr . T_XOR bool_expr
+   10          | bool_expr . T_EQ bool_expr
+   11          | bool_expr . T_NEQ bool_expr
+
+    T_EQ       shift, and go to state 14
+    T_NEQ      shift, and go to state 15
+    T_AND      shift, and go to state 16
+    T_OR       shift, and go to state 17
+    T_XOR      shift, and go to state 18
+    T_NEWLINE  shift, and go to state 19
+
+
+state 10
+
+    5 line: T_ID T_ASSIGN . bool_expr line
+
+    T_BOOL  shift, and go to state 3
+    T_ID    shift, and go to state 11
+    T_NOT   shift, and go to state 5
+    T_LEFT  shift, and go to state 6
+
+    bool_expr  go to state 20
+
+
+state 11
+
+   14 bool_expr: T_ID .
+
+    $default  reduce using rule 14 (bool_expr)
+
+
+state 12
+
+    7 bool_expr: bool_expr . T_AND bool_expr
+    8          | bool_expr . T_OR bool_expr
+    9          | bool_expr . T_XOR bool_expr
+   10          | bool_expr . T_EQ bool_expr
+   11          | bool_expr . T_NEQ bool_expr
+   12          | T_NOT bool_expr .
+
+    T_EQ   shift, and go to state 14
+    T_NEQ  shift, and go to state 15
+
+    $default  reduce using rule 12 (bool_expr)
+
+
+state 13
+
+    7 bool_expr: bool_expr . T_AND bool_expr
+    8          | bool_expr . T_OR bool_expr
+    9          | bool_expr . T_XOR bool_expr
+   10          | bool_expr . T_EQ bool_expr
+   11          | bool_expr . T_NEQ bool_expr
+   13          | T_LEFT bool_expr . T_RIGHT
+
+    T_EQ     shift, and go to state 14
+    T_NEQ    shift, and go to state 15
+    T_AND    shift, and go to state 16
+    T_OR     shift, and go to state 17
+    T_XOR    shift, and go to state 18
+    T_RIGHT  shift, and go to state 21
+
+
+state 14
+
+   10 bool_expr: bool_expr T_EQ . bool_expr
+
+    T_BOOL  shift, and go to state 3
+    T_ID    shift, and go to state 11
+    T_NOT   shift, and go to state 5
+    T_LEFT  shift, and go to state 6
+
+    bool_expr  go to state 22
+
+
+state 15
+
+   11 bool_expr: bool_expr T_NEQ . bool_expr
+
+    T_BOOL  shift, and go to state 3
+    T_ID    shift, and go to state 11
+    T_NOT   shift, and go to state 5
+    T_LEFT  shift, and go to state 6
+
+    bool_expr  go to state 23
+
+
+state 16
+
+    7 bool_expr: bool_expr T_AND . bool_expr
+
+    T_BOOL  shift, and go to state 3
+    T_ID    shift, and go to state 11
+    T_NOT   shift, and go to state 5
+    T_LEFT  shift, and go to state 6
+
+    bool_expr  go to state 24
+
+
+state 17
+
+    8 bool_expr: bool_expr T_OR . bool_expr
+
+    T_BOOL  shift, and go to state 3
+    T_ID    shift, and go to state 11
+    T_NOT   shift, and go to state 5
+    T_LEFT  shift, and go to state 6
+
+    bool_expr  go to state 25
+
+
+state 18
+
+    9 bool_expr: bool_expr T_XOR . bool_expr
+
+    T_BOOL  shift, and go to state 3
+    T_ID    shift, and go to state 11
+    T_NOT   shift, and go to state 5
+    T_LEFT  shift, and go to state 6
+
+    bool_expr  go to state 26
+
+
+state 19
+
+    4 line: bool_expr T_NEWLINE .
+
+    $default  reduce using rule 4 (line)
+
+
+state 20
+
+    5 line: T_ID T_ASSIGN bool_expr . line
+    7 bool_expr: bool_expr . T_AND bool_expr
+    8          | bool_expr . T_OR bool_expr
+    9          | bool_expr . T_XOR bool_expr
+   10          | bool_expr . T_EQ bool_expr
+   11          | bool_expr . T_NEQ bool_expr
+
+    T_BOOL     shift, and go to state 3
+    T_ID       shift, and go to state 4
+    T_EQ       shift, and go to state 14
+    T_NEQ      shift, and go to state 15
+    T_AND      shift, and go to state 16
+    T_OR       shift, and go to state 17
+    T_XOR      shift, and go to state 18
+    T_NOT      shift, and go to state 5
+    T_LEFT     shift, and go to state 6
+    T_NEWLINE  shift, and go to state 7
+
+    line       go to state 27
+    bool_expr  go to state 9
+
+
+state 21
+
+   13 bool_expr: T_LEFT bool_expr T_RIGHT .
+
+    $default  reduce using rule 13 (bool_expr)
+
+
+state 22
+
+    7 bool_expr: bool_expr . T_AND bool_expr
+    8          | bool_expr . T_OR bool_expr
+    9          | bool_expr . T_XOR bool_expr
+   10          | bool_expr . T_EQ bool_expr
+   10          | bool_expr T_EQ bool_expr .
+   11          | bool_expr . T_NEQ bool_expr
+
+    $default  reduce using rule 10 (bool_expr)
+
+
+state 23
+
+    7 bool_expr: bool_expr . T_AND bool_expr
+    8          | bool_expr . T_OR bool_expr
+    9          | bool_expr . T_XOR bool_expr
+   10          | bool_expr . T_EQ bool_expr
+   11          | bool_expr . T_NEQ bool_expr
+   11          | bool_expr T_NEQ bool_expr .
+
+    $default  reduce using rule 11 (bool_expr)
+
+
+state 24
+
+    7 bool_expr: bool_expr . T_AND bool_expr
+    7          | bool_expr T_AND bool_expr .
+    8          | bool_expr . T_OR bool_expr
+    9          | bool_expr . T_XOR bool_expr
+   10          | bool_expr . T_EQ bool_expr
+   11          | bool_expr . T_NEQ bool_expr
+
+    T_EQ   shift, and go to state 14
+    T_NEQ  shift, and go to state 15
+    T_XOR  shift, and go to state 18
+
+    $default  reduce using rule 7 (bool_expr)
+
+
+state 25
+
+    7 bool_expr: bool_expr . T_AND bool_expr
+    8          | bool_expr . T_OR bool_expr
+    8          | bool_expr T_OR bool_expr .
+    9          | bool_expr . T_XOR bool_expr
+   10          | bool_expr . T_EQ bool_expr
+   11          | bool_expr . T_NEQ bool_expr
+
+    T_EQ   shift, and go to state 14
+    T_NEQ  shift, and go to state 15
+    T_XOR  shift, and go to state 18
+
+    $default  reduce using rule 8 (bool_expr)
+
+
+state 26
+
+    7 bool_expr: bool_expr . T_AND bool_expr
+    8          | bool_expr . T_OR bool_expr
+    9          | bool_expr . T_XOR bool_expr
+    9          | bool_expr T_XOR bool_expr .
+   10          | bool_expr . T_EQ bool_expr
+   11          | bool_expr . T_NEQ bool_expr
+
+    T_EQ   shift, and go to state 14
+    T_NEQ  shift, and go to state 15
+
+    $default  reduce using rule 9 (bool_expr)
+
+
+state 27
+
+    5 line: T_ID T_ASSIGN bool_expr line .
+
+    $default  reduce using rule 5 (line)
