@@ -84,10 +84,10 @@ line:
     T_NEWLINE
     | bool_expr T_NEWLINE { 
         if($1 == 1){
-        printf("TRUE\n");
+        printf("OUTPUT: TRUE\n");
         }
         else{
-            printf("FALSE\n");
+            printf("OUTPUT: FALSE\n");
         }
     }
     | T_ID T_ASSIGN bool_expr line {
